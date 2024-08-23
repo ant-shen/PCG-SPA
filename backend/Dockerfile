@@ -2,7 +2,7 @@
 FROM node:14
 
 # Set working directory
-WORKDIR /app
+WORKDIR /tmp/app
 
 # Install dependencies
 COPY package*.json ./
@@ -12,7 +12,7 @@ RUN npm install
 COPY . .
 
 # Expose port
-EXPOSE 3000
+EXPOSE 5001
 
 # Start application
 CMD ["node", "app.js"]
