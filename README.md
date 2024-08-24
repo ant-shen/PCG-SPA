@@ -20,7 +20,7 @@ This will build and start three services:
   Backend: The Node.js server handling API requests.
   Frontend: The Vue.js application serving the frontend.
 
-1.Use the Application
+1.Using the Application
   Sign Up: Create an account using the signup form.
   Manage Owners and Landholdings: Add, edit, and delete owners and their associated landholdings.
   Upload Files: Upload files related to an owner or landholding, which can be viewed by any authenticated user.
@@ -41,11 +41,11 @@ This will build and start three services:
     POST /upload: Upload a file related to an owner or landholding.
 
 
-7. Authentication
+3. Authentication
   JWT: The application uses JWT (JSON Web Token) for user authentication. Upon signup or login, a token is generated and must be included in the Authorization header of subsequent requests.
 
 
-8. Troubleshooting
+4. Troubleshooting
   Port Conflicts: Ensure that ports 8080 and 5001 are not being used by other services.
   MongoDB Connection: If MongoDB fails to connect, ensure that the MONGO_URI is correctly set in the .env file.
   Module Not Found: If you encounter issues with missing modules, ensure that npm install has been run successfully in both the backend/ and frontend/ directories.
