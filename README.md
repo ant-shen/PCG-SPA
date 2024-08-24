@@ -1,5 +1,5 @@
 # PCG-SPA
-Single Page Application allowing users to sign up. Authenticated users can perform CRUD Operations on Owners and Land Holdings. Does not use Dockerfile. 
+Single Page Application allowing users to sign up. Authenticated users can perform CRUD Operations on Owners and Land Holdings. This version does not use Dockerfile. 
 
 ## Prerequisites
 - [Node.js](https://nodejs.org/)
