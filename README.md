@@ -32,12 +32,13 @@ This will build and start three services:
     POST /owners: Add a new owner.
     PUT /owners/:id: Update an existing owner.
     DELETE /owners/:id: Delete an owner.
-  Landholdings:
+    
+  **Landholdings:**
     GET /landholdings: Retrieve all landholdings.
     POST /landholdings: Add a new landholding.
     PUT /landholdings/:id: Update an existing landholding.
     DELETE /landholdings/:id: Delete a landholding.
-  File Upload:
+  **File Upload:**
     POST /upload: Upload a file related to an owner or landholding.
 
 
