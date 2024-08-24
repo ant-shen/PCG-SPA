@@ -1,27 +1,45 @@
 const express = require('express');
-const router = express.Router();
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
+const User = require('../models/User');
+const router = express.Router();
 
-router.post('/signup', async (req, res) => {
+// Register a new user
+router.post('/register', async (req, res) => {
   const { email, password } = req.body;
-  const user = new User({ email, password });
   try {
-    await user.save();
-    res.status(201).json({ message: 'User created' });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({ msg: 'User already exists' });
+    }
 
-router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
-  if (user && user.password === password) {
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
-    res.json({ token });
-  } else {
-    res.status(401).json({ error: 'Invalid credentials' });
+    user = new User({
+      email,
+      password
+    });
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+    await user.save();
+
+    const payload = {
+      user: {
+        id: user.id
+      }
+    };
+
+    jwt.sign(
+      payload,
+      'your_jwt_secret', // use environment variable in production
+      { expiresIn: '1h' },
+      (err, token) => {
+        if (err) throw err;
+        res.json({ token });
+      }
+    );
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
   }
 });
 
