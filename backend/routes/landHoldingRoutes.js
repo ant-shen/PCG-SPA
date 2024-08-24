@@ -1,60 +1,45 @@
 const express = require('express');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 const router = express.Router();
-const LandHolding = require('../landHolding');
 
-// Get all land holdings
-router.get('/', async (req, res) => {
+// Register a new user
+router.post('/register', async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const landHoldings = await LandHolding.find();
-    res.json(landHoldings);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({ msg: 'User already exists' });
+    }
 
-// Create a new land holding
-router.post('/', async (req, res) => {
-  const { name, legalEntity, netMineralAcres, mineralOwnerRoyalty, sectionName, section, township, range, titleSource, owner } = req.body;
-  try {
-    const landHolding = new LandHolding({ name, legalEntity, netMineralAcres, mineralOwnerRoyalty, sectionName, section, township, range, titleSource, owner });
-    await landHolding.save();
-    res.status(201).json(landHolding);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+    user = new User({
+      email,
+      password
+    });
 
-// Get a specific land holding
-router.get('/:id', async (req, res) => {
-  try {
-    const landHolding = await LandHolding.findById(req.params.id);
-    if (!landHolding) return res.status(404).json({ error: 'Land holding not found' });
-    res.json(landHolding);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+    await user.save();
 
-// Update a land holding
-router.put('/:id', async (req, res) => {
-  const { name, legalEntity, netMineralAcres, mineralOwnerRoyalty, sectionName, section, township, range, titleSource, owner } = req.body;
-  try {
-    const landHolding = await LandHolding.findByIdAndUpdate(req.params.id, { name, legalEntity, netMineralAcres, mineralOwnerRoyalty, sectionName, section, township, range, titleSource, owner }, { new: true });
-    if (!landHolding) return res.status(404).json({ error: 'Land holding not found' });
-    res.json(landHolding);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+    const payload = {
+      user: {
+        id: user.id
+      }
+    };
 
-// Delete a land holding
-router.delete('/:id', async (req, res) => {
-  try {
-    const landHolding = await LandHolding.findByIdAndDelete(req.params.id);
-    if (!landHolding) return res.status(404).json({ error: 'Land holding not found' });
-    res.json({ message: 'Land holding deleted' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    jwt.sign(
+      payload,
+      'your_jwt_secret', // use environment variable in production
+      { expiresIn: '1h' },
+      (err, token) => {
+        if (err) throw err;
+        res.json({ token });
+      }
+    );
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
   }
 });
 
